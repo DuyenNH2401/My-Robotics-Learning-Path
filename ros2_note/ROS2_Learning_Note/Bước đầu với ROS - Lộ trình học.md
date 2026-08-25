@@ -73,11 +73,11 @@ Bản cài đặt ROS cung cấp các package thiết yếu để làm việc v�
 
 Sử dụng [[turtlesim]] để làm quen với những thành phần giao tiếp chính và thử cơ chế truyền message trong ROS framework. Hoàn thành lần lượt các tutorial sau:
 
-1. [[Tìm hiểu về node]] — [Understanding nodes](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html)
-2. [[Tìm hiểu về topic]] — [Understanding topics](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html)
-3. [[Tìm hiểu về service]] — [Understanding services](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html)
-4. [[Tìm hiểu về parameter]] — [Understanding parameters](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters/Understanding-ROS2-Parameters.html)
-5. [[Tìm hiểu về action]] — [Understanding actions](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html)
+1. [[Tìm hiểu về node]]
+2. [[Tìm hiểu về topic]]
+3. [[Tìm hiểu về service]]
+4. [[Tìm hiểu về parameter]]
+5. [[Tìm hiểu về action]]
 
 ### 4. Tìm hiểu introspection thông qua log
 
@@ -85,7 +85,7 @@ Sử dụng [[turtlesim]] để làm quen với những thành phần giao tiế
 
 Để thực hành introspection thông qua log, hãy hoàn thành tutorial về `rqt_console`:
 
-- [[Xem log bằng rqt_console]] — [tài liệu chính thức](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Using-Rqt-Console/Using-Rqt-Console.html)
+- [[Xem log bằng rqt_console]]
 
 ### 5. Tìm hiểu cách sử dụng launch file
 
@@ -93,7 +93,7 @@ Sử dụng [[turtlesim]] để làm quen với những thành phần giao tiế
 
 Hãy hoàn thành tutorial sau:
 
-- [[Khởi chạy nhiều node]] — [tài liệu chính thức](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Launching-Multiple-Nodes/Launching-Multiple-Nodes.html)
+- [[Khởi chạy nhiều node]]
 
 ### 6. Ghi và phát lại dữ liệu
 
@@ -105,7 +105,7 @@ Trong một số trường hợp, việc phát lại dữ liệu rất hữu íc
 
 Hãy hoàn thành tutorial về [[rosbag|ghi và phát lại dữ liệu]]:
 
-- [[Ghi và phát lại dữ liệu]] — [Recording and playing back data](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html)
+- [[Ghi và phát lại dữ liệu]]
 
 ## Bước tiếp theo
 

@@ -36,6 +36,9 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 - [x] [[Client]]
 - [x] [[Action]]
 - [x] [[Parameter]]
+- [x] [[Logging]]
+- [x] [[Launch file]]
+- [x] [[rosbag]]
 
 | Mẫu giao tiếp | Khi dùng | Đặc tính |
 | --- | --- | --- |
@@ -54,9 +57,9 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 - [x] [[Tìm hiểu về service]]
 - [x] [[Tìm hiểu về parameter]]
 - [x] [[Tìm hiểu về action]]
-- [ ] [[Xem log bằng rqt_console]]
-- [ ] [[Khởi chạy nhiều node]]
-- [ ] [[Ghi và phát lại dữ liệu]]
+- [x] [[Xem log bằng rqt_console]]
+- [x] [[Khởi chạy nhiều node]]
+- [x] [[Ghi và phát lại dữ liệu]]
 
 ## How-to Guides
 
