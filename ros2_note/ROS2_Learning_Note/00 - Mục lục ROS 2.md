@@ -32,9 +32,16 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 - [x] [[Topic]]
 - [x] [[Publisher]]
 - [x] [[Subscriber]]
-- [ ] [[Service]]
-- [ ] [[Action]]
-- [ ] [[Parameter]]
+- [x] [[Service]]
+- [x] [[Client]]
+- [x] [[Action]]
+- [x] [[Parameter]]
+
+| Mẫu giao tiếp | Khi dùng | Đặc tính |
+| --- | --- | --- |
+| [[Topic]] | Luồng dữ liệu liên tục | Publisher/subscriber, một chiều |
+| [[Service]] | Request/response ngắn | [[Service client]] nhận một response |
+| [[Action]] | Tác vụ dài | [[Action client]], goal, feedback, result và cancel |
 
 ## Tutorials
 
@@ -44,9 +51,9 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 - [x] [[Sử dụng turtlesim, ros2 và rqt]]
 - [x] [[Tìm hiểu về node]]
 - [x] [[Tìm hiểu về topic]]
-- [ ] [[Tìm hiểu về service]]
-- [ ] [[Tìm hiểu về parameter]]
-- [ ] [[Tìm hiểu về action]]
+- [x] [[Tìm hiểu về service]]
+- [x] [[Tìm hiểu về parameter]]
+- [x] [[Tìm hiểu về action]]
 - [ ] [[Xem log bằng rqt_console]]
 - [ ] [[Khởi chạy nhiều node]]
 - [ ] [[Ghi và phát lại dữ liệu]]
