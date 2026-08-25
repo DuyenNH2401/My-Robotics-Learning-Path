@@ -1,5 +1,5 @@
 ---
-aliases: [Launching nodes]
+aliases: [Launching nodes, Khởi chạy nhiều node]
 tags: [ros2, launch, cli, node]
 area: tutorials
 level: beginner

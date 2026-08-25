@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.validate_vault import find_markdown_files, validate_note
+from tools.validate_vault import find_markdown_files, validate_note, validate_vault
 
 
 VALID_FRONTMATTER = """---
@@ -101,6 +101,72 @@ class ValidateNoteTests(unittest.TestCase):
             note = self.write_note(vault_root, "lesson.md", VALID_FRONTMATTER + "# Bài học\n")
 
             self.assertEqual(find_markdown_files(vault_root), [note])
+
+    def test_duplicate_alias_reports_alias_and_each_note_path(self):
+        """A shared alias would make a wikilink target ambiguous."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            first = self.write_note(
+                vault_root,
+                "first.md",
+                VALID_FRONTMATTER.replace("aliases: []", "aliases:\n  - Node") + "# First\n",
+            )
+            second = self.write_note(
+                vault_root,
+                "second.md",
+                VALID_FRONTMATTER.replace("aliases: []", "aliases:\n  - Node") + "# Second\n",
+            )
+
+            errors, _warnings = validate_vault(vault_root)
+
+            self.assertIn(
+                f"duplicate alias: Node ({first.relative_to(vault_root)}, {second.relative_to(vault_root)})",
+                errors,
+            )
+
+    def test_unresolved_wikilink_is_a_warning_unless_listed_as_planned(self):
+        """A future-plan link is intentional, while an unplanned target needs attention."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(vault_root, "source.md", VALID_FRONTMATTER + "# Source\n\n[[Future note]]\n[[Missing note]]\n")
+            self.write_note(
+                vault_root,
+                "00 - Mục lục ROS 2.md",
+                VALID_FRONTMATTER + "# Index\n\n## Planned notes\n\n- [[Future note]]\n",
+            )
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(errors, [])
+            self.assertEqual(warnings, ["source.md: broken wikilink: [[Missing note]]"])
+
+    def test_missing_heading_fragment_is_an_error(self):
+        """A renamed target heading must not leave a silently broken deep link."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(vault_root, "target.md", VALID_FRONTMATTER + "# Target\n\n## Có thật\n")
+            self.write_note(vault_root, "source.md", VALID_FRONTMATTER + "# Source\n\n[[target#Không có]]\n")
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(warnings, [])
+            self.assertEqual(errors, ["source.md: broken internal heading: [[target#Không có]]"])
+
+    def test_inline_alias_is_a_wikilink_target(self):
+        """Existing compact frontmatter aliases remain part of the vault index."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(
+                vault_root,
+                "target.md",
+                VALID_FRONTMATTER.replace("aliases: []", "aliases: [short name]") + "# Target\n",
+            )
+            self.write_note(vault_root, "source.md", VALID_FRONTMATTER + "# Source\n\n[[short name]]\n")
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(errors, [])
+            self.assertEqual(warnings, [])
 
 
 if __name__ == "__main__":

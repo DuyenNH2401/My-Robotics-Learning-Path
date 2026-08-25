@@ -1,6 +1,7 @@
 ---
 aliases:
   - Understanding topics
+  - Tìm hiểu về topic
 tags:
   - ros2
   - topic

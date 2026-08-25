@@ -46,8 +46,8 @@ Trình bày các bước theo tài liệu chính thức; giữ nguyên command v
 
 ## Kiến thức liên quan
 
-- [[Tên note chuẩn]]
+- Tên note chuẩn
 
 ## Bước tiếp theo
 
-- [[Tên tutorial kế tiếp]]
+- Tên tutorial kế tiếp

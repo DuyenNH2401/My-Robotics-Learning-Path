@@ -1,6 +1,7 @@
 ---
 aliases:
   - Understanding actions
+  - Tìm hiểu về action
 tags:
   - ros2
   - action

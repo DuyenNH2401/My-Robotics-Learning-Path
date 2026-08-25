@@ -1,6 +1,7 @@
 ---
 aliases:
   - Understanding nodes
+  - Tìm hiểu về node
 tags:
   - ros2
   - node

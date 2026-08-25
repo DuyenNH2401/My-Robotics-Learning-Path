@@ -1,6 +1,7 @@
 ---
 aliases:
   - Configuring environment
+  - Cấu hình môi trường ROS 2
 tags:
   - ros2
   - environment

@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 
 FRONTMATTER_DELIMITER = "---"
 EMPTY_WIKILINK = re.compile(r"\[\[\s*(?:\|[^\]]*)?\]\]")
+WIKILINK = re.compile(r"\[\[\s*([^\]|#]+?)(?:#([^\]|]+))?(?:\|[^\]]*)?\s*\]\]")
+HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", re.MULTILINE)
 UNFINISHED_MARKERS = re.compile(r"\b(?:TODO|TBD|FIXME)\b|\{\{.+?\}\}|<placeholder>", re.IGNORECASE)
 EXCLUDED_DIRECTORIES = {".git", ".obsidian", ".agents", ".codex", "docs", "Attachments", "tools", "tests"}
 EXCLUDED_FILENAMES = {"Welcome.md"}
@@ -48,26 +50,42 @@ def parse_frontmatter(contents: str) -> tuple[dict[str, object], str]:
         return {}, contents
 
     metadata: dict[str, object] = {}
-    current_mapping: dict[str, str] | None = None
-    for line in lines[1:end]:
+    current_key: str | None = None
+    for index, line in enumerate(lines[1:end], 1):
         if not line.strip() or line.lstrip().startswith("#"):
             continue
         if line.startswith((" ", "\t")):
-            if current_mapping is not None and ":" in line:
-                key, value = line.strip().split(":", 1)
-                current_mapping[key.strip()] = value.strip().strip('"\'')
+            value = line.strip()
+            container = metadata.get(current_key) if current_key else None
+            if isinstance(container, list) and value.startswith("- "):
+                container.append(value[2:].strip().strip('"\''))
+            elif isinstance(container, dict) and ":" in value:
+                key, value = value.split(":", 1)
+                container[key.strip()] = value.strip().strip('"\'')
             continue
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
         key, value = key.strip(), value.strip()
         if value:
-            metadata[key] = value.strip('"\'')
-            current_mapping = None
+            if value == "[]":
+                metadata[key] = []
+            elif value.startswith("[") and value.endswith("]"):
+                metadata[key] = [item.strip().strip('"\'') for item in value[1:-1].split(",") if item.strip()]
+            else:
+                metadata[key] = value.strip('"\'')
+            current_key = None
         else:
-            mapping: dict[str, str] = {}
-            metadata[key] = mapping
-            current_mapping = mapping
+            # A blank frontmatter key may introduce either a YAML list or a
+            # small string mapping.  The first indented line determines it.
+            next_line = lines[index + 1] if index + 1 < end else ""
+            if next_line.lstrip().startswith("- "):
+                sequence: list[str] = []
+                metadata[key] = sequence
+            else:
+                mapping: dict[str, str] = {}
+                metadata[key] = mapping
+            current_key = key
     return metadata, "\n".join(lines[end + 1 :])
 
 
@@ -110,15 +128,103 @@ def find_markdown_files(vault_root: Path) -> list[Path]:
     )
 
 
+def _link_targets(contents: str) -> list[tuple[str, str | None]]:
+    """Return non-empty wikilink note targets and optional heading fragments."""
+    return [(match.group(1).strip(), match.group(2).strip() if match.group(2) else None) for match in WIKILINK.finditer(contents)]
+
+
+def _planned_notes(vault_root: Path) -> set[str]:
+    """Read future note titles from the index's `Planned notes` section."""
+    index = vault_root / "00 - Mục lục ROS 2.md"
+    if not index.exists():
+        return set()
+    planned: set[str] = set()
+    in_section = False
+    for line in index.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## "):
+            in_section = line[3:].strip().casefold() == "planned notes"
+            continue
+        if in_section:
+            planned.update(target for target, _heading in _link_targets(line))
+    return planned
+
+
+def _headings(contents: str) -> set[str]:
+    return {match.group(1).strip().casefold() for match in HEADING.finditer(contents)}
+
+
+def validate_vault(vault_root: Path) -> tuple[list[str], list[str]]:
+    """Validate cross-note aliases and wikilink destinations in a vault."""
+    notes = find_markdown_files(vault_root)
+    errors: list[str] = []
+    warnings: list[str] = []
+    targets: dict[str, list[Path]] = {}
+    contents_by_path: dict[Path, str] = {}
+
+    for path in notes:
+        contents = path.read_text(encoding="utf-8")
+        contents_by_path[path] = contents
+        metadata, _body = parse_frontmatter(contents)
+        targets.setdefault(path.stem.casefold(), []).append(path)
+        aliases = metadata.get("aliases", [])
+        if isinstance(aliases, list):
+            for alias in aliases:
+                targets.setdefault(alias.casefold(), []).append(path)
+
+    for target, paths in sorted(targets.items()):
+        unique_paths = sorted(set(paths))
+        if len(unique_paths) > 1:
+            display = next(
+                alias
+                for path in unique_paths
+                for alias in [path.stem]
+                if alias.casefold() == target
+            ) if any(path.stem.casefold() == target for path in unique_paths) else None
+            if display is None:
+                for path in unique_paths:
+                    metadata, _body = parse_frontmatter(contents_by_path[path])
+                    aliases = metadata.get("aliases", [])
+                    if isinstance(aliases, list):
+                        display = next((alias for alias in aliases if alias.casefold() == target), target)
+                        break
+            rendered_paths = ", ".join(str(path.relative_to(vault_root)) for path in unique_paths)
+            errors.append(f"duplicate alias: {display} ({rendered_paths})")
+
+    planned = {title.casefold() for title in _planned_notes(vault_root)}
+    for source_path, contents in contents_by_path.items():
+        for target, heading in _link_targets(contents):
+            matches = targets.get(target.casefold(), [])
+            source = source_path.relative_to(vault_root)
+            if not matches:
+                message = f"broken wikilink: [[{target}]]"
+                if target.casefold() in planned:
+                    continue
+                warnings.append(f"{source}: {message}")
+                continue
+            if len(set(matches)) > 1:
+                errors.append(f"{source}: ambiguous wikilink: [[{target}]]")
+                continue
+            if heading and heading.casefold() not in _headings(contents_by_path[matches[0]]):
+                errors.append(f"{source}: broken internal heading: [[{target}#{heading}]]")
+    return errors, warnings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate ROS 2 Vietnamese vault notes.")
     parser.add_argument("vault_root", nargs="?", default=".", type=Path)
+    parser.add_argument("--strict", action="store_true", help="treat unresolved wikilinks as errors")
     arguments = parser.parse_args()
     vault_root = arguments.vault_root.resolve()
     errors: list[str] = []
     for path in find_markdown_files(vault_root):
         for error in validate_note(path, vault_root):
             errors.append(f"{path.relative_to(vault_root)}: {error}")
+    cross_vault_errors, warnings = validate_vault(vault_root)
+    errors.extend(cross_vault_errors)
+    for warning in warnings:
+        print(f"warning: {warning}")
+    if arguments.strict:
+        errors.extend(warnings)
     if errors:
         print("\n".join(errors))
         return 1

@@ -65,6 +65,23 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 
 Nhóm này sẽ được bổ sung sau khi hoàn thiện các tutorial trong phạm vi.
 
+## Planned notes
+
+Các wikilink sau là khái niệm hoặc công cụ được dùng trong ghi chú hiện có; chúng được giữ làm mục tiêu điều hướng cho các plan tiếp theo.
+
+- [[Client library]]
+- [[Introspection]]
+- [[Message]]
+- [[Quality of Service]]
+- [[ROS]]
+- [[ROS 2 distribution]]
+- [[ROS graph]]
+- [[ROS Interface]]
+- [[ros2 CLI]]
+- [[rqt]]
+- [[turtlesim]]
+- [[Workspace]]
+
 ## Tài nguyên
 
 - [[Quy ước thuật ngữ ROS 2]]

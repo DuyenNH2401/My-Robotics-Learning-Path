@@ -1,6 +1,7 @@
 ---
 aliases:
   - Using turtlesim, ros2, and rqt
+  - Sử dụng turtlesim, ros2 và rqt
 tags:
   - ros2
   - turtlesim

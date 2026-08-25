@@ -1,5 +1,5 @@
 ---
-aliases: [Recording and playing back data, ros2 bag]
+aliases: [Recording and playing back data, Ghi và phát lại dữ liệu]
 tags: [ros2, rosbag, cli, topic, service, action]
 area: tutorials
 level: beginner

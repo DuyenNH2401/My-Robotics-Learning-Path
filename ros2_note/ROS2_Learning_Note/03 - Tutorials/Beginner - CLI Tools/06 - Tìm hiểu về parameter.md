@@ -1,6 +1,7 @@
 ---
 aliases:
   - Understanding parameters
+  - Tìm hiểu về parameter
 tags:
   - ros2
   - parameter

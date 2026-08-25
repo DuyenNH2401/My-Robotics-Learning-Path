@@ -2,6 +2,7 @@
 aliases:
   - Using rqt_console to view logs
   - rqt_console
+  - Xem log bằng rqt_console
 tags: [ros2, rqt, logging, cli]
 area: tutorials
 level: beginner

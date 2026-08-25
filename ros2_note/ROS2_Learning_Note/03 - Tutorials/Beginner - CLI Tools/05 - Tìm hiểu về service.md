@@ -1,6 +1,7 @@
 ---
 aliases:
   - Understanding services
+  - Tìm hiểu về service
 tags:
   - ros2
   - service
