@@ -10,9 +10,9 @@ distributions:
     - jazzy
     - humble
 sources:
-  lyrical: URL
-  jazzy: URL
-  humble: URL
+  lyrical: https://docs.ros.org/en/lyrical/Tutorials.html
+  jazzy: https://docs.ros.org/en/jazzy/Tutorials.html
+  humble: https://docs.ros.org/en/humble/Tutorials.html
 translation-status: template
 ---
 
@@ -20,9 +20,9 @@ translation-status: template
 
 ## Nguồn
 
-- Lyrical: URL
-- Jazzy: URL
-- Humble: URL
+- Lyrical: https://docs.ros.org/en/lyrical/Tutorials.html
+- Jazzy: https://docs.ros.org/en/jazzy/Tutorials.html
+- Humble: https://docs.ros.org/en/humble/Tutorials.html
 
 ## Mục tiêu
 

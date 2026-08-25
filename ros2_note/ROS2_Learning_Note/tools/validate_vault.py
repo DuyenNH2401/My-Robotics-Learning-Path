@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 FRONTMATTER_DELIMITER = "---"
@@ -16,6 +17,17 @@ EMPTY_WIKILINK = re.compile(r"\[\[\s*(?:\|[^\]]*)?\]\]")
 UNFINISHED_MARKERS = re.compile(r"\b(?:TODO|TBD|FIXME)\b|\{\{.+?\}\}|<placeholder>", re.IGNORECASE)
 EXCLUDED_DIRECTORIES = {".git", ".obsidian", ".agents", ".codex", "docs", "Attachments", "tools", "tests"}
 EXCLUDED_FILENAMES = {"Welcome.md"}
+
+
+def is_official_ros_source(value: object) -> bool:
+    """Return whether a source URL belongs to an approved official ROS source."""
+    if not isinstance(value, str):
+        return False
+    parsed = urlparse(value)
+    return parsed.scheme == "https" and (
+        parsed.netloc == "docs.ros.org"
+        or (parsed.netloc == "github.com" and parsed.path.startswith("/ros2/ros2_documentation"))
+    )
 
 
 def parse_frontmatter(contents: str) -> tuple[dict[str, object], str]:
@@ -72,6 +84,8 @@ def validate_note(path: Path, vault_root: Path) -> list[str]:
     sources = metadata.get("sources")
     if not isinstance(sources, dict) or not sources.get("lyrical"):
         errors.append("missing sources.lyrical")
+    elif not is_official_ros_source(sources["lyrical"]):
+        errors.append("invalid sources.lyrical official URL")
 
     if EMPTY_WIKILINK.search(contents):
         errors.append("empty wikilink")
