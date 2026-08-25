@@ -14,7 +14,9 @@ from urllib.parse import urlparse
 
 FRONTMATTER_DELIMITER = "---"
 EMPTY_WIKILINK = re.compile(r"\[\[\s*(?:\|[^\]]*)?\]\]")
-WIKILINK = re.compile(r"\[\[\s*([^\]|#]+?)(?:#([^\]|]+))?(?:\|[^\]]*)?\s*\]\]")
+WIKILINK = re.compile(
+    r"\[\[\s*(?:(?P<target>[^\]|#]+?)(?:#(?P<heading>[^\]|]+))?|#(?P<local_heading>[^\]|]+))(?:\|[^\]]*)?\s*\]\]"
+)
 HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", re.MULTILINE)
 UNFINISHED_MARKERS = re.compile(r"\b(?:TODO|TBD|FIXME)\b|\{\{.+?\}\}|<placeholder>", re.IGNORECASE)
 EXCLUDED_DIRECTORIES = {".git", ".obsidian", ".agents", ".codex", "docs", "Attachments", "tools", "tests"}
@@ -130,7 +132,13 @@ def find_markdown_files(vault_root: Path) -> list[Path]:
 
 def _link_targets(contents: str) -> list[tuple[str, str | None]]:
     """Return non-empty wikilink note targets and optional heading fragments."""
-    return [(match.group(1).strip(), match.group(2).strip() if match.group(2) else None) for match in WIKILINK.finditer(contents)]
+    return [
+        (
+            (match.group("target") or "").strip(),
+            (match.group("heading") or match.group("local_heading") or "").strip() or None,
+        )
+        for match in WIKILINK.finditer(contents)
+    ]
 
 
 def _planned_notes(vault_root: Path) -> set[str]:
@@ -153,6 +161,16 @@ def _headings(contents: str) -> set[str]:
     return {match.group(1).strip().casefold() for match in HEADING.finditer(contents)}
 
 
+def _aliases(metadata: dict[str, object]) -> list[str]:
+    """Normalize supported scalar and list alias forms without accepting mappings."""
+    aliases = metadata.get("aliases", [])
+    if isinstance(aliases, str):
+        return [aliases]
+    if isinstance(aliases, list):
+        return [alias for alias in aliases if isinstance(alias, str)]
+    return []
+
+
 def validate_vault(vault_root: Path) -> tuple[list[str], list[str]]:
     """Validate cross-note aliases and wikilink destinations in a vault."""
     notes = find_markdown_files(vault_root)
@@ -166,10 +184,8 @@ def validate_vault(vault_root: Path) -> tuple[list[str], list[str]]:
         contents_by_path[path] = contents
         metadata, _body = parse_frontmatter(contents)
         targets.setdefault(path.stem.casefold(), []).append(path)
-        aliases = metadata.get("aliases", [])
-        if isinstance(aliases, list):
-            for alias in aliases:
-                targets.setdefault(alias.casefold(), []).append(path)
+        for alias in _aliases(metadata):
+            targets.setdefault(alias.casefold(), []).append(path)
 
     for target, paths in sorted(targets.items()):
         unique_paths = sorted(set(paths))
@@ -183,17 +199,16 @@ def validate_vault(vault_root: Path) -> tuple[list[str], list[str]]:
             if display is None:
                 for path in unique_paths:
                     metadata, _body = parse_frontmatter(contents_by_path[path])
-                    aliases = metadata.get("aliases", [])
-                    if isinstance(aliases, list):
-                        display = next((alias for alias in aliases if alias.casefold() == target), target)
-                        break
+                    aliases = _aliases(metadata)
+                    display = next((alias for alias in aliases if alias.casefold() == target), target)
+                    break
             rendered_paths = ", ".join(str(path.relative_to(vault_root)) for path in unique_paths)
             errors.append(f"duplicate alias: {display} ({rendered_paths})")
 
     planned = {title.casefold() for title in _planned_notes(vault_root)}
     for source_path, contents in contents_by_path.items():
         for target, heading in _link_targets(contents):
-            matches = targets.get(target.casefold(), [])
+            matches = [source_path] if not target else targets.get(target.casefold(), [])
             source = source_path.relative_to(vault_root)
             if not matches:
                 message = f"broken wikilink: [[{target}]]"

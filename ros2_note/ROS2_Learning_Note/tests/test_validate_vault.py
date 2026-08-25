@@ -168,6 +168,52 @@ class ValidateNoteTests(unittest.TestCase):
             self.assertEqual(errors, [])
             self.assertEqual(warnings, [])
 
+    def test_scalar_alias_is_a_wikilink_target(self):
+        """A single scalar alias resolves just like a YAML alias list."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(
+                vault_root,
+                "target.md",
+                VALID_FRONTMATTER.replace("aliases: []", "aliases: Short name") + "# Target\n",
+            )
+            self.write_note(vault_root, "source.md", VALID_FRONTMATTER + "# Source\n\n[[Short name]]\n")
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(errors, [])
+            self.assertEqual(warnings, [])
+
+    def test_missing_local_heading_fragment_is_an_error(self):
+        """A local deep link must point to a heading in the same note."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(
+                vault_root,
+                "source.md",
+                VALID_FRONTMATTER + "# Source\n\n## Existing heading\n\n[[#Missing heading]]\n",
+            )
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(warnings, [])
+            self.assertEqual(errors, ["source.md: broken internal heading: [[#Missing heading]]"])
+
+    def test_existing_local_heading_fragment_is_valid(self):
+        """A local wikilink resolves when the destination heading exists."""
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            self.write_note(
+                vault_root,
+                "source.md",
+                VALID_FRONTMATTER + "# Source\n\n## Existing heading\n\n[[#Existing heading]]\n",
+            )
+
+            errors, warnings = validate_vault(vault_root)
+
+            self.assertEqual(errors, [])
+            self.assertEqual(warnings, [])
+
 
 if __name__ == "__main__":
     unittest.main()
