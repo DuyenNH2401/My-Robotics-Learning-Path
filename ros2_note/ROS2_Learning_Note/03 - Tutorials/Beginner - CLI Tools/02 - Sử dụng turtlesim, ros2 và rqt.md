@@ -77,6 +77,10 @@ $ ros2 run turtlesim turtlesim_node
 
 Một cửa sổ simulator xuất hiện cùng `turtle1`. Mở terminal mới, source ROS 2, rồi chạy node điều khiển:
 
+![Cửa sổ turtlesim hiển thị turtle1 ở trung tâm vùng mô phỏng](../../05%20-%20Tài%20nguyên/Hình%20ảnh/Beginner%20CLI/turtlesim.png)
+
+*Nguồn ảnh: [turtlesim.png — ROS 2 Lyrical documentation](https://raw.githubusercontent.com/ros2/ros2_documentation/lyrical/source/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/images/turtlesim.png).*
+
 ```console
 $ ros2 run turtlesim turtle_teleop_key
 ```
@@ -118,6 +122,10 @@ Lần đầu cửa sổ có thể trống. Chọn **Plugins** > **Services** > *
 ```console
 $ rqt --force-discover
 ```
+
+![Cửa sổ rqt Service Caller với danh sách Service và nút refresh](../../05%20-%20Tài%20nguyên/Hình%20ảnh/Beginner%20CLI/rqt-service-caller.png)
+
+*Nguồn ảnh: [rqt.png — ROS 2 Lyrical documentation](https://raw.githubusercontent.com/ros2/ros2_documentation/lyrical/source/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/images/rqt.png).*
 
 Trong Service Caller, nhấn nút refresh cạnh danh sách **Service**, rồi chọn `/spawn`.
 
