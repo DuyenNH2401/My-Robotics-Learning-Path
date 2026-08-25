@@ -65,9 +65,9 @@ Bản cài đặt ROS cung cấp các package thiết yếu để làm việc v�
 
 - [Các phương án cài đặt ROS 2](https://docs.ros.org/en/lyrical/Installation.html)
 
-[[turtlesim]] là một công cụ mô phỏng 2D gọn nhẹ dành cho người mới. Công cụ này giúp bạn học các khái niệm cốt lõi của ROS trong một môi trường trực quan và đơn giản.
+[[turtlesim]] là một công cụ mô phỏng 2D gọn nhẹ dành cho người mới. Công cụ này giúp bạn học các khái niệm cốt lõi của ROS trong một môi trường trực quan và đơn giản. Trước khi chạy tutorial, hãy hoàn thành [[Cấu hình môi trường ROS 2]].
 
-- [[Sử dụng turtlesim, ros2 và rqt|Cài đặt và thiết lập turtlesim]] — [tài liệu chính thức](https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html)
+- [[Sử dụng turtlesim, ros2 và rqt|Cài đặt và thiết lập turtlesim]]
 
 ### 3. Làm quen với các thành phần giao tiếp chính
 

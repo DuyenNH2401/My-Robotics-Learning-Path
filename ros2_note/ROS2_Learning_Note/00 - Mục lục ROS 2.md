@@ -38,8 +38,8 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 
 ### Beginner CLI Tools
 
-- [ ] [[Cấu hình môi trường ROS 2]]
-- [ ] [[Sử dụng turtlesim, ros2 và rqt]]
+- [x] [[Cấu hình môi trường ROS 2]]
+- [x] [[Sử dụng turtlesim, ros2 và rqt]]
 - [ ] [[Tìm hiểu về node]]
 - [ ] [[Tìm hiểu về topic]]
 - [ ] [[Tìm hiểu về service]]
