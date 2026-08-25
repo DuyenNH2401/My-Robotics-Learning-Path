@@ -28,8 +28,10 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 
 ## Concepts
 
-- [ ] [[Node]]
-- [ ] [[Topic]]
+- [x] [[Node]]
+- [x] [[Topic]]
+- [x] [[Publisher]]
+- [x] [[Subscriber]]
 - [ ] [[Service]]
 - [ ] [[Action]]
 - [ ] [[Parameter]]
@@ -40,8 +42,8 @@ Mục lục này theo dõi thứ tự học và trạng thái biên dịch của
 
 - [x] [[Cấu hình môi trường ROS 2]]
 - [x] [[Sử dụng turtlesim, ros2 và rqt]]
-- [ ] [[Tìm hiểu về node]]
-- [ ] [[Tìm hiểu về topic]]
+- [x] [[Tìm hiểu về node]]
+- [x] [[Tìm hiểu về topic]]
 - [ ] [[Tìm hiểu về service]]
 - [ ] [[Tìm hiểu về parameter]]
 - [ ] [[Tìm hiểu về action]]
