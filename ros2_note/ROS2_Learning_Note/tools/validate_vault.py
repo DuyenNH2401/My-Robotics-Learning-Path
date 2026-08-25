@@ -26,7 +26,13 @@ def is_official_ros_source(value: object) -> bool:
     parsed = urlparse(value)
     return parsed.scheme == "https" and (
         parsed.netloc == "docs.ros.org"
-        or (parsed.netloc == "github.com" and parsed.path.startswith("/ros2/ros2_documentation"))
+        or (
+            parsed.netloc == "github.com"
+            and (
+                parsed.path == "/ros2/ros2_documentation"
+                or parsed.path.startswith("/ros2/ros2_documentation/")
+            )
+        )
     )
 
 

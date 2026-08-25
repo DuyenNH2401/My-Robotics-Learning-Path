@@ -72,6 +72,21 @@ class ValidateNoteTests(unittest.TestCase):
 
             self.assertEqual(validate_note(note, vault_root), [])
 
+    def test_similarly_named_github_repository_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            note = self.write_note(
+                vault_root,
+                "unofficial-source.md",
+                VALID_FRONTMATTER.replace(
+                    "https://docs.ros.org/en/lyrical/example.html",
+                    "https://github.com/ros2/ros2_documentation-evil/blob/main/source/Tutorials.rst",
+                )
+                + "# Nguồn không chính thức\n",
+            )
+
+            self.assertTrue(any("sources.lyrical" in error for error in validate_note(note, vault_root)))
+
     def test_empty_wikilink_is_reported(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             vault_root = Path(temporary_directory)
