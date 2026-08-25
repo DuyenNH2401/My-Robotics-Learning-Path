@@ -2,7 +2,6 @@
 aliases:
   - action
   - action server
-  - action client
 tags:
   - ros2
   - concept

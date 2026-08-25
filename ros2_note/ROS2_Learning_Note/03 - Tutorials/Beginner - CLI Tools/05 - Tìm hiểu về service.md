@@ -201,7 +201,7 @@ Output hiển thị tuần tự `REQUEST_SENT`, `REQUEST_RECEIVED`, `RESPONSE_SE
 ## Khác biệt phiên bản
 
 > [!info] ROS 2 Jazzy
-> Các service interface của turtlesim dùng `turtlesim/srv/...`, thay cho `turtlesim_msgs/srv/...`. Tutorial Jazzy không có phần `ros2 service info --verbose` và `ros2 service echo` của Lyrical.
+> Các service interface của turtlesim dùng `turtlesim/srv/...`, thay cho `turtlesim_msgs/srv/...`. Tutorial Jazzy không có phần `ros2 service info --verbose` của Lyrical, nhưng vẫn có đầy đủ phần `ros2 service echo`.
 
 > [!warning] ROS 2 Humble
 > Cũng dùng `turtlesim/srv/...`; ngoài các phần introspection trên, Humble không có cả mục `ros2 service info` trong tutorial. Các command `list`, `type`, `find`, `interface show` và `call` vẫn cùng cú pháp.
