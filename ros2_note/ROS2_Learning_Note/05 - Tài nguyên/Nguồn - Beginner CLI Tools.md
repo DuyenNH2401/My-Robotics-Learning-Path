@@ -9,9 +9,13 @@ area: tutorials
 level: beginner
 distributions:
   primary: lyrical
-  compared: jazzy, humble
+  compared:
+    - jazzy
+    - humble
 sources:
   lyrical: https://docs.ros.org/en/lyrical/Tutorials/Beginner-CLI-Tools.html
+  jazzy: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools.html
+  humble: https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html
 translation-status: complete
 ---
 

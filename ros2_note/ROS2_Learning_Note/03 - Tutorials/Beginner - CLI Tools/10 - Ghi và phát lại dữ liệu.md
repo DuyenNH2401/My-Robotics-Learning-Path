@@ -73,7 +73,7 @@ $ ros2 topic list
 /turtle1/pose
 ```
 
-`/turtle_teleop` publish command điều khiển turtle lên `/turtle1/cmd_vel`. Xem message của nó:
+`/teleop_turtle` publish command điều khiển turtle lên `/turtle1/cmd_vel`. Xem message của nó:
 
 ```console
 $ ros2 topic echo /turtle1/cmd_vel

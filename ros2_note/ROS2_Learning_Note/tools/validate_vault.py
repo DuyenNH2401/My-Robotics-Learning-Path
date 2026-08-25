@@ -24,20 +24,22 @@ EXCLUDED_FILENAMES = {"Welcome.md"}
 
 
 def is_official_ros_source(value: object) -> bool:
-    """Return whether a source URL belongs to an approved official ROS source."""
+    """Return whether a source URL is an official ROS 2 Lyrical source."""
     if not isinstance(value, str):
         return False
     parsed = urlparse(value)
-    return parsed.scheme == "https" and (
-        parsed.netloc == "docs.ros.org"
-        or (
-            parsed.netloc == "github.com"
-            and (
-                parsed.path == "/ros2/ros2_documentation"
-                or parsed.path.startswith("/ros2/ros2_documentation/")
-            )
+    if parsed.scheme != "https":
+        return False
+    if parsed.netloc == "docs.ros.org":
+        return parsed.path.startswith("/en/lyrical/")
+    if parsed.netloc == "raw.githubusercontent.com":
+        return parsed.path.startswith("/ros2/ros2_documentation/lyrical/")
+    if parsed.netloc == "github.com":
+        return (
+            parsed.path.startswith("/ros2/ros2_documentation/blob/lyrical/")
+            or parsed.path.startswith("/ros2/ros2_documentation/tree/lyrical/")
         )
-    )
+    return False
 
 
 def parse_frontmatter(contents: str) -> tuple[dict[str, object], str]:

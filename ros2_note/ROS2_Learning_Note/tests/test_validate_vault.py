@@ -57,7 +57,7 @@ class ValidateNoteTests(unittest.TestCase):
 
             self.assertTrue(any("sources.lyrical" in error for error in validate_note(note, vault_root)))
 
-    def test_official_ros_source_is_accepted(self):
+    def test_lyrical_github_source_is_accepted(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             vault_root = Path(temporary_directory)
             note = self.write_note(
@@ -65,12 +65,42 @@ class ValidateNoteTests(unittest.TestCase):
                 "official-source.md",
                 VALID_FRONTMATTER.replace(
                     "https://docs.ros.org/en/lyrical/example.html",
-                    "https://github.com/ros2/ros2_documentation/blob/rolling/source/Tutorials.rst",
+                    "https://github.com/ros2/ros2_documentation/blob/lyrical/source/Tutorials.rst",
                 )
                 + "# Nguồn chính thức\n",
             )
 
             self.assertEqual(validate_note(note, vault_root), [])
+
+    def test_raw_lyrical_github_source_is_accepted(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            note = self.write_note(
+                vault_root,
+                "raw-lyrical-source.md",
+                VALID_FRONTMATTER.replace(
+                    "https://docs.ros.org/en/lyrical/example.html",
+                    "https://raw.githubusercontent.com/ros2/ros2_documentation/lyrical/source/Tutorials.rst",
+                )
+                + "# Nguồn Lyrical thô\n",
+            )
+
+            self.assertEqual(validate_note(note, vault_root), [])
+
+    def test_jazzy_docs_source_is_rejected_for_lyrical(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            vault_root = Path(temporary_directory)
+            note = self.write_note(
+                vault_root,
+                "jazzy-source.md",
+                VALID_FRONTMATTER.replace(
+                    "https://docs.ros.org/en/lyrical/example.html",
+                    "https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools.html",
+                )
+                + "# Nguồn Jazzy\n",
+            )
+
+            self.assertTrue(any("sources.lyrical" in error for error in validate_note(note, vault_root)))
 
     def test_similarly_named_github_repository_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
