@@ -1,19 +1,29 @@
 import rclpy
 from example_interfaces.msg import Int64
 from rclpy.node import Node
+from my_robot_interfaces.msg import HardwareStatus
 
 
 class NumberPublisherNode(Node):
     def __init__(self):
         super().__init__("number_publisher")
         self.number_ = 2
-        self.number_publisher_ = self.create_publisher(Int64, "number", 10)
-        self.number_timer_ = self.create_timer(1.0, self.publish_number)
+        self.number_publisher_ = self.create_publisher(
+            HardwareStatus, "HardwareStatus", 10
+        )
+        self.number_timer_ = self.create_timer(1.0, self.my_publish_number)
         self.get_logger().info("Number publisher node has been started.")
 
     def publish_number(self):
         msg = Int64()
         msg.data = self.number_
+        self.number_publisher_.publish(msg)
+
+    def my_publish_number(self):
+        msg = HardwareStatus()
+        msg.version = 1
+        msg.temperature = 25.0
+        msg.are_motors_ready = True
         self.number_publisher_.publish(msg)
 
 
