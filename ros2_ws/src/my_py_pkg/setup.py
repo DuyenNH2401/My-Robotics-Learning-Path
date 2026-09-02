@@ -26,6 +26,7 @@ setup(
         "console_scripts": [
             "number_publisher = my_py_pkg.number_publisher:main",
             "number_subscriber = my_py_pkg.number_subscriber:main",
+            "reset_counter_client = my_py_pkg.reset_counter_client:main",
         ],
     },
 )
