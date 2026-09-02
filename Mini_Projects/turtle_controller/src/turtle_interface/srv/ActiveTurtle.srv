@@ -1,0 +1,9 @@
+#ActiveTurtle.srv interface
+# 0 is off, 1 is on
+
+uint8 OFF = 0
+uint8 ON = 1
+
+uint8 active_turtle
+---
+string message
