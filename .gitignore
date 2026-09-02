@@ -28,6 +28,8 @@ log/
 # IDE & OS
 .vscode/
 .DS_Store
+.idea/
+.superpowers/
 
 
 Reinforcement_Learning
