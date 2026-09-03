@@ -8,7 +8,7 @@ from my_robot_interfaces.action import CountUntil
 
 class CountUntilServer(Node):
     def __init__(self):
-        super().__init__("count_until")
+        super().__init__("count_until_server")
         self.count_until_server_ = ActionServer(self, CountUntil, "count_until", goal_callback=self.goal_callback, execute_callback=self.execute_callback)
 
 
@@ -22,8 +22,8 @@ class CountUntilServer(Node):
         return GoalResponse.ACCEPT
 
     def execute_callback(self, goal_handle: ServerGoalHandle):
-        target_number = goal_handle.target_number
-        delay = goal_handle.delay
+        target_number = goal_handle.request.target_number
+        delay = goal_handle.request.delay
         result = CountUntil.Result()
         counter = 0
 
