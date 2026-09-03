@@ -27,6 +27,7 @@ setup(
             "number_publisher = my_py_pkg.number_publisher:main",
             "number_subscriber = my_py_pkg.number_subscriber:main",
             "reset_counter_client = my_py_pkg.reset_counter_client:main",
+            "count_until_server = my_py_pkg.count_until_server:main",
         ],
     },
 )

@@ -1,0 +1,6 @@
+uint64 target_number
+float64 delay
+---
+int64 final_number
+---
+int64 current_number
