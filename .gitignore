@@ -32,5 +32,6 @@ log/
 .superpowers/
 
 
-Reinforcement_Learning
 __pycache__/
+.obsidian
+bag/
