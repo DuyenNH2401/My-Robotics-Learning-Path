@@ -24,6 +24,23 @@ aliases:
 
 ---
 
+## Viết action
+Các bước chính để viết một action server:
+1. Vì ở phía server, chúng ta phải chọn tên action và interface. Thông thường, bạn sẽ cần tạo một custom interface (trong một package chuyên dụng).
+2. Sau đó, import interface vào code và khởi tạo một action server trong constructor. Tại đây, bạn sẽ đăng ký 3 phương thức callback
+    - **Goal callback:** Khi server nhận được một mục tiêu, quyết định chấp nhận hay từ chối nó.
+    - **Execute callback:** Sau khi mục tiêu được chấp nhận, tiến hành thực thi nó. Trong quá trình thực thi, bạn cũng có thể xuất bản (publish) các phản hồi feedback tùy chọn.
+    - **Cancel callback (cơ chế tùy chọn):** Nếu nhận được yêu cầu hủy, bạn có thể chấp nhận hoặc từ chối. Nếu chấp nhận, bạn sẽ phải hủy tiến trình thực thi mục tiêu hiện tại.
+
+Để viết một action client, bạn thực hiện theo các bước:
+1. Xác định tên và interface cần dùng để có thể giao tiếp với server.
+2. Import interface vào code và khởi tạo một action client trong constructor.
+3. Thêm một phương thức để gửi goal. Sau khi gửi goal, bạn sẽ cần viết một số callback:
+    - **Goal response callback:** Giúp bạn biết goal đã được server chấp nhận hay bị từ chối.
+    - **Goal result callback:** Sau khi goal được server thực thi xong, bạn sẽ nhận được kết quả và trạng thái cuối cùng của goal tại đây.
+    - **Feedback callback (tùy chọn):** Nhận các phản hồi trung gian nếu 
+4. Cuối cùng, từ bất kỳ vị trí nào trong mã nguồn, bạn đều có thể quyết định hủy việc thực thi của một goal đang hoạt động.
+
 ## 📖 Bối cảnh (Background)
 
 Trong lập trình robot, có những công việc mất nhiều giây, vài phút hoặc thậm chí hàng giờ để hoàn thành (ví dụ: điều hướng robot di chuyển đến phòng họp, cánh tay robot gắp vật thể, quét bản đồ 3D). 
