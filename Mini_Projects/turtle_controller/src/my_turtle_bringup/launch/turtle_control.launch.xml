@@ -1,0 +1,10 @@
+<launch>
+    <group>
+        <push_ros_namespace namespace="t1"/>
+        <include file="$(find-pkg-share my_turtle_bringup)/launch/turtle_control.launch.py"/>
+    </group>
+    <group>
+        <push_ros_namespace namespace="t2"/>
+        <include file="$(find-pkg-share my_turtle_bringup)/launch/turtle_control.launch.py"/>
+    </group>
+</launch>

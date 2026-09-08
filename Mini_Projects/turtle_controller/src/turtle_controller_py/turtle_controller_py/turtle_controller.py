@@ -1,83 +1,65 @@
+#!/usr/bin/env python3
 import rclpy
-from geometry_msgs.msg import Twist
 from rclpy.node import Node
+from geometry_msgs.msg import Twist
 from turtlesim_msgs.msg import Pose
 from turtlesim_msgs.srv import SetPen
 from turtle_interface.srv import ActiveTurtle
 
 
-
-class TurtleController(Node):
+class TurtleControllerNode(Node):
     def __init__(self):
         super().__init__("turtle_controller")
+        self.declare_parameter("color_1", [255, 0, 0])
+        self.declare_parameter("color_2", [0, 255, 0])
+        self.declare_parameter("turtle_velocity", 1.0)
+        self.color_1_ = self.get_parameter("color_1").value
+        self.color_2_ = self.get_parameter("color_2").value
+        self.turtle_velocity_ = self.get_parameter("turtle_velocity").value
 
-        self.x_ = 0.0
-        self.y_ = 0.0
-        self.theta_ = 0.0
-        self.prev_x_ = 0.0
-        self.is_active = 0
+        self.is_active_ = 0
+        self.previous_x_ = 0.0
+        self.set_pen_client_ = self.create_client(SetPen, "turtle1/set_pen")
+        self.activate_turtle_service_ = self.create_service(ActiveTurtle, "activate_turtle", self.callback_activate_turtle)
+        self.cmd_vel_pub_ = self.create_publisher(Twist, "turtle1/cmd_vel", 10)
+        self.pose_sub_ = self.create_subscription(Pose, "turtle1/pose", self.callback_pose, 10)
 
-        self.publisher_ = self.create_publisher(Twist, "turtle1/cmd_vel", 10)
-        self.subscriber_ = self.create_subscription(
-            Pose, "turtle1/pose", self.pose_callback, 10
-        )
+    def callback_pose(self, pose: Pose):
+        if self.is_active_:
+            cmd = Twist()
+            if pose.x < 5.5:
+                cmd.linear.x = self.turtle_velocity_
+                cmd.angular.z = self.turtle_velocity_
+            else:
+                cmd.linear.x = self.turtle_velocity_ * 2.0
+                cmd.angular.z = self.turtle_velocity_ * 2.0
+            self.cmd_vel_pub_.publish(cmd)
 
-        self.active_turtle_service_ = self.create_service(ActiveTurtle, "turtle1/active_turtle", self.callback_active_turtle)
-        self.set_color_client_ = self.create_client(SetPen, "turtle1/set_pen")
+            if pose.x > 5.5 and self.previous_x_ <= 5.5:
+                self.previous_x_ = pose.x
+                self.get_logger().info("Set color 1.")
+                self.call_set_pen(self.color_1_[0], self.color_1_[1], self.color_1_[2])
+            elif pose.x <= 5.5 and self.previous_x_ > 5.5:
+                self.previous_x_ = pose.x
+                self.get_logger().info("Set color 2.")
+                self.call_set_pen(self.color_2_[0], self.color_2_[1], self.color_2_[2])
 
-        self.get_logger().info("Turtle Controller has been started.")
-
-    def pose_callback(self, pose: Pose):
-
-        if not self.is_active:
-            return
-
-        cmd = Twist()
-
-        self.x_ = pose.x
-        self.y_ = pose.y
-        self.theta_ = pose.theta
-
-        if self.x_ < 5.5:
-            cmd.linear.x = 1.0
-            cmd.angular.z = 1.0
-            self.publisher_.publish(cmd)
-        else:
-            cmd.linear.x = 2.0
-            cmd.angular.z = 2.0
-            self.publisher_.publish(cmd)
-
-        if self.prev_x_ < 5.5 and self.x_ >= 5.5:
-            self.get_logger().info("Change side, color set to Red")
-            self.call_set_pen((255, 0, 0))
-
-        if self.prev_x_ > 5.5 and self.x_ <= 5.5:
-            self.get_logger().info("Change side, color set to green")
-            self.call_set_pen((0, 255, 0))
-
-        self.prev_x_ = self.x_
-
-    def call_set_pen(self, color):
-        while not self.set_color_client_.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(
-                "Waiting for the set pen service..."
-            )
-        r, g, b = color
+    def call_set_pen(self, r, g, b):
+        while not self.set_pen_client_.wait_for_service(1.0):
+            self.get_logger().warn("Waiting for service...")
         request = SetPen.Request()
-        if self.x_ < 5.5:
-            request.r = r
-            request.g = g
-            request.b = b
-        else:
-            request.r = r
-            request.g = g
-            request.b = b
+        request.r = r
+        request.g = g
+        request.b = b
+        future = self.set_pen_client_.call_async(request)
+        future.add_done_callback(self.callback_set_pen_response)
 
-        future = self.set_color_client_.call_async(request)
+    def callback_set_pen_response(self, future):
+        self.get_logger().info("Successfully changed pen color")
 
-    def callback_active_turtle(self, request: ActiveTurtle.Request, response: ActiveTurtle.Response):
-        self.is_active = request.active_turtle
-        if request.active_turtle:
+    def callback_activate_turtle(self, request: ActiveTurtle.Request, response: ActiveTurtle.Response):
+        self.is_active_ = request.active_turtle
+        if self.is_active_:
             response.message = "Starting the turtle"
         else:
             response.message = "Stopping the turtle"
@@ -86,8 +68,8 @@ class TurtleController(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    turtle_controller = TurtleController()
-    rclpy.spin(turtle_controller)
+    node = TurtleControllerNode()
+    rclpy.spin(node)
     rclpy.shutdown()
 
 
